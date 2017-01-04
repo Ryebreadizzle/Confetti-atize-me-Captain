@@ -8,31 +8,25 @@ var sock = io.connect('https://ws.streamjar.tv/', {
 
 var serialport = require("serialport");
 
-var onstring = new Buffer("AFFF0101DF", 'hex');
-
-var offstring = new Buffer("AFFF0202DF", 'hex');
-
 var port;
 
-function comNameFunction(cb) {
+function getComName(cb) {
     serialport.list(function(err, ports) {
         cb(ports[0].comName);
     });
 }
 
-function turnOff() {
-    port.write(offstring);
-    console.log("turned off");
-}
-
 function launchConfetti() {
     console.log("Launching confetti!");
-    port.write(onstring);
+    port.write(Buffer("AFFF0101DF", 'hex'));
     console.log("turned on");
-    setTimeout(turnOff, config.motorTime * 1000);
+    setTimeout(function() {
+        port.write(Buffer("AFFF0202DF", 'hex'));
+        console.log("turned off");
+    }, config.motorTime * 1000);
 }
 
-comNameFunction(function(portname) {
+getComName(function(portname) {
     port = new serialport(portname, function() {
 
         sock.on('connect', function() {
