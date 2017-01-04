@@ -1,6 +1,10 @@
+var config = require('./config');
+
 var io = require("socket.io-client");
 
-var sock = io.connect('https://ws.streamjar.tv/', { query: '[insert API key]' });
+var sock = io.connect('https://ws.streamjar.tv/', {
+    query: "key=" + config.apiKey
+});
 
 var serialport = require("serialport");
 
@@ -11,21 +15,21 @@ var offstring = new Buffer("AFFF0202DF", 'hex');
 var port;
 
 function comNameFunction(cb) {
-    serialport.list(function (err, ports) {
-	cb(ports[0].comName);
+    serialport.list(function(err, ports) {
+        cb(ports[0].comName);
     });
 }
 
-function turnOff(){
+function turnOff() {
     port.write(offstring);
     console.log("turned off");
 }
 
-function launchConfetti(){
+function launchConfetti() {
     console.log("Launching confetti!");
     port.write(onstring);
     console.log("turned on");
-    setTimeout(turnOff,3000);
+    setTimeout(turnOff, config.motorTime * 1000);
 }
 
 comNameFunction(function(portname) {
@@ -39,7 +43,7 @@ comNameFunction(function(portname) {
             console.log(donation.name + ' just donated to the stream.');
             console.log(donation);
             if (donation.amount >= 5) {
-	        launchConfetti();
+                launchConfetti();
             }
         });
 
