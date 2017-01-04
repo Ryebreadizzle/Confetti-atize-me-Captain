@@ -42,7 +42,7 @@ comNameFunction(function(portname) {
         sock.on('donation', function(donation) {
             console.log(donation.name + ' just donated to the stream.');
             console.log(donation);
-            if (donation.amount >= 5) {
+            if (donation.amount >= config.minimumDonation) {
                 launchConfetti();
             }
         });
