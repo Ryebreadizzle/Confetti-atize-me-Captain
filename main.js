@@ -8,7 +8,11 @@ var sock = io.connect('https://ws.streamjar.tv/', {
 
 var serialport = require("serialport");
 
+var request = require("request");
+
 var port;
+
+var lastPercent;
 
 function getComName(cb) {
     serialport.list(function(err, ports) {
@@ -26,6 +30,20 @@ function launchConfetti() {
     }, config.motorTime * 1000);
 }
 
+function checkGoalPercent() {
+    request("https://streamjar.tv/api/v1/goals?apikey=" + config.apiKey, function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            console.log(body);
+            goals = JSON.parse(body);
+            goals.forEach(function(goal) {
+                if (goal.active) {
+                    console.log(goal);
+                }
+            });
+        }
+    });
+}
+
 getComName(function(portname) {
     port = new serialport(portname, function() {
 
@@ -39,6 +57,7 @@ getComName(function(portname) {
             if (donation.amount >= config.minimumDonation) {
                 launchConfetti();
             }
+            setTimeout(checkGoalPercent, 1000 * (config.motorTime + 1));
         });
 
         sock.on('subscribe', function(subscription) {
