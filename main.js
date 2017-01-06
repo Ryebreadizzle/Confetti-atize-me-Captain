@@ -70,5 +70,7 @@ getComName(function(portname) {
             console.log(subscription.name);
             launchConfetti();
         });
+
+        checkGoalPercent();
     });
 });
