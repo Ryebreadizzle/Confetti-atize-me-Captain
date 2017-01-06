@@ -37,7 +37,13 @@ function checkGoalPercent() {
             goals = JSON.parse(body);
             goals.forEach(function(goal) {
                 if (goal.active) {
-                    console.log(goal);
+                    if (lastPercent == null) {
+                        lastPercent = config.confettiEveryPercent * (Math.floor(((goal.current * 100 / goal.total) / config.confettiEveryPercent)));
+                    }
+                    if (goal.current * 100 / goal.total - lastPercent >= config.confettiEveryPercent) {
+                        launchConfetti();
+                        lastPercent = config.confettiEveryPercent * (Math.floor(((goal.current * 100 / goal.total) / config.confettiEveryPercent)));
+                    }
                 }
             });
         }
